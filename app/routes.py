@@ -15,8 +15,9 @@ def orders():
         req_data = request.get_json()
         discription = req_data['discription']
         deadline = req_data['deadline']
-        tags = req_data['tags']
-        order = Order(discription=discription,deadline = deadline, tags = tags, creation_date = time())
+        tags = req_data['tags'][2]
+        print (tags)
+        order = Order(discription=discription,deadline = deadline, tags = tags, creation_date = time())  #поменять тайм дать ей функцию без скобок
         db.session.add(order)
         db.session.commit()
         return "Db has updated"
