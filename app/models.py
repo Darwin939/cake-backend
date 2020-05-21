@@ -32,11 +32,18 @@ class  Tag(db.Model):
     created_on  =  db.Column(db.DateTime(), default=datetime.utcnow) #TO-DO поменять время
     order = db.relationship('Order', secondary=order_tag, backref='tag')
     def __repr__(self):
-        return "<{}:{}>".format(id, self.name)
+        return "<{}:{}>".format(self.id, self.name)
 
 
 #from app import db
 #from app.models import Order,Tag
+#db.create_all()
+#db.drop_all()
 #order1  = Order(discription='dasdsfd',deadline = 45456)
 #db.session.add(order1)
 #db.session.commit()
+#t1 = Tag(name="refactoring")
+#t2 = Tag(name="refactoring")
+#source venv/bin/activate  ---- Activate env
+#db.session.add_all([t1,t2,order1,order2])
+#order1.tag.extend([t2, t1])
