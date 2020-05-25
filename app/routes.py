@@ -56,18 +56,15 @@ def admin():
 
 @app.route('/register/',methods=['POST', 'GET'])
 def register():
-
-    if request.method == "POST":
-        
+    if request.method == "POST":   
         username = request.get_json()["username"]
         password = request.get_json()["password"]
         number  = request.get_json()["number"]
         user = User(username = username,password = password,number=number)
         db.session.add(user)
         db.session.commit()
-        return "updated"
-        
-    return ""
+        return jsonify({"Database_status":"db updated"}) 
+    return jsonify({"Wrong data":"Need login and password,number"})
 
 
 @app.route('/login/',methods=['post', 'get'])
