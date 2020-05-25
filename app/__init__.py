@@ -9,7 +9,7 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login_manager = LoginManager(app)
-app.config['SECRET_KEY'] = 'a really really really really long secret key'
+app.config['SECRET_KEY'] = 'a really really really realy long secret key'
 
 from app import routes, models
 

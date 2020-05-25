@@ -30,7 +30,7 @@ class  Tag(db.Model):
     __tablename__ = 'tag'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    created_on  =  db.Column(db.DateTime(), default=datetime.utcnow) #TO-DO поменять время
+    created_on  =  db.Column(db.DateTime(), default=time) 
     order = db.relationship('Order', secondary=order_tag, backref='tag')
     def __repr__(self):
         return "<{}:{}>".format(self.id, self.name)
@@ -41,9 +41,8 @@ class User(db.Model,UserMixin):
     username = db.Column(db.String(50), nullable=False, unique=True)
     number = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False)
-    #TO-DO change time to unix
-    created_on = db.Column(db.DateTime(), default=datetime.utcnow)
-    updated_on = db.Column(db.DateTime(), default=datetime.utcnow,  onupdate=datetime.utcnow)
+    creation_date = db.Column(db.Integer, default = time)
+    updated_on = db.Column(db.Integer, default = time,  onupdate=time)
 
     def __repr__(self):
         return "<{}:{}>".format(self.id, self.username)
