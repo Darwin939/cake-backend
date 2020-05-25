@@ -3,8 +3,9 @@ from flask import render_template , jsonify ,request
 from app import app , db
 
 from additional_func.now_time import time
-from app.models import Order
-
+from app.models import Order,User
+from flask_login import current_user,login_requiredб login_user
+from flask import  Flask, render_template, request, redirect, url_for, flash, make_response, session
 
 
 
@@ -27,11 +28,43 @@ def orders():
         y = {}
         y['discription'] = order.discription
         y['deadline'] = order.deadline
-        y['tags'] = order.tags
+       # y['tags'] = order.tags
         y['creation_date'] = order.creation_date
         x[int(order.id)] = y
     return x
 
 @app.route('/', methods =['POST','GET'] )
 def index():
+    print (current_user.get_id())
     return "if you want check orders , please edir ulr to '/orders'"
+
+
+#-------------------------For tests , in production shoul be deleted------------
+
+@app.route('/admin/',methods=['post', 'get'])
+def admin():
+    if current_user.is_authenticated:
+        return "Congrats"
+    try:
+        if session['id'] =='147555151651admin':
+            return "Congrats you`re view this"
+    except:
+        pass
+    return 'no auth', 401
+    
+
+@app.route('/login/',methods=['post', 'get'])
+def login():
+    try:
+        user = db.session.query(User).filter(User.username == request.get_json()["username"]).first()
+        print (user)
+        login_user(user)
+    except:
+        pass
+    return "Post and admin admin"
+#-------------------------For tests , in production shoul be deleted------------
+
+
+@app.route('/register/',methods=['post', 'get'])
+def login():
+    

@@ -1,8 +1,8 @@
-from app import db
+from app import db,login_manager
 
 from datetime import datetime
 from time import time
-
+from flask_login import LoginManager, UserMixin
 
 
 
@@ -26,6 +26,7 @@ order_tag = db.Table('order_tag',
 )
 
 class  Tag(db.Model):
+    #TO-DO запросы many to many
     __tablename__ = 'tag'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
@@ -35,8 +36,24 @@ class  Tag(db.Model):
         return "<{}:{}>".format(self.id, self.name)
 
 
+class User(db.Model,UserMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    username = db.Column(db.String(50), nullable=False, unique=True)
+    number = db.Column(db.String(100), nullable=False, unique=True)
+    password = db.Column(db.String(100), nullable=False)
+    created_on = db.Column(db.DateTime(), default=datetime.utcnow)
+    updated_on = db.Column(db.DateTime(), default=datetime.utcnow,  onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return "<{}:{}>".format(self.id, self.username)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.query(User).get(user_id)
+
 #from app import db
-#from app.models import Order,Tag
+#from app.models import Order,Tag,order_tag, User
+#u = User(username = "admin",number = "8755555",password = "admin")
 #db.create_all()
 #db.drop_all()
 #order1  = Order(discription='dasdsfd',deadline = 45456)
