@@ -4,7 +4,7 @@ from app import app , db
 
 from additional_func.now_time import time
 from app.models import Order,User
-from flask_login import current_user,login_requiredб login_user
+from flask_login import current_user,login_required, login_user
 from flask import  Flask, render_template, request, redirect, url_for, flash, make_response, session
 
 
@@ -39,7 +39,7 @@ def index():
     return "if you want check orders , please edir ulr to '/orders'"
 
 
-#-------------------------For tests , in production shoul be deleted------------
+#-------------------------BEGIN For tests , in production shoul be deleted------------
 
 @app.route('/admin/',methods=['post', 'get'])
 def admin():
@@ -53,18 +53,34 @@ def admin():
     return 'no auth', 401
     
 
+#------------------------- END For tests , in production shoul be deleted------------
+
+
+@app.route('/register/',methods=['POST', 'GET'])
+def register():
+
+    if request.method == "POST":
+        
+        username = request.get_json()["username"]
+        password = request.get_json()["password"]
+        number  = request.get_json()["number"]
+        user = User(username = username,password = password,number=number)
+        db.session.add(user)
+        db.session.commit()
+        return "updated"
+        
+    return ""
+
+
 @app.route('/login/',methods=['post', 'get'])
 def login():
-    try:
-        user = db.session.query(User).filter(User.username == request.get_json()["username"]).first()
-        print (user)
+    username = request.get_json()["username"]
+    password = request.get_json()["password"]
+    user = db.session.query(User).filter(User.username == username).first()
+    if user and  user.password ==password:
         login_user(user)
-    except:
-        pass
+        print (user.password,password)
+        return "login registred"
+    else:
+        return "wrong password or login"
     return "Post and admin admin"
-#-------------------------For tests , in production shoul be deleted------------
-
-
-@app.route('/register/',methods=['post', 'get'])
-def login():
-    
