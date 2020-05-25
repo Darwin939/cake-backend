@@ -4,7 +4,7 @@ from app import app , db
 
 from additional_func.now_time import time
 from app.models import Order,User
-from flask_login import current_user,login_required, login_user
+from flask_login import current_user,login_required, login_user, logout_user
 from flask import  Flask, render_template, request, redirect, url_for, flash, make_response, session
 
 
@@ -35,9 +35,7 @@ def orders():
 
 @app.route('/', methods =['POST','GET'] )
 def index():
-    print (current_user.get_id())
-    return "if you want check orders , please edir ulr to '/orders'"
-
+    return jsonify({"is_authenticated":str(current_user.is_authenticated)})
 
 #-------------------------BEGIN For tests , in production shoul be deleted------------
 
@@ -79,8 +77,14 @@ def login():
     user = db.session.query(User).filter(User.username == username).first()
     if user and  user.password ==password:
         login_user(user)
-        print (user.password,password)
-        return "login registred"
+        return jsonify({"is_authenticated":str(current_user.is_authenticated)})
     else:
-        return "wrong password or login"
-    return "Post and admin admin"
+        return jsonify({"Wrong data":"Password or Login Incorrect"})
+    return jsonify({"Wrong data":"Need login and password"})
+
+
+@app.route('/logout/')
+@login_required
+def logout():
+    logout_user()
+    return jsonify({"is_authenticated":str(current_user.is_authenticated)})

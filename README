@@ -1,1 +1,15 @@
-НЕ забудь Про Venv
+ROUTES 
+
+domain - base URL, basic url 
+
+domain/  = базовый URL . Должен возвращать залогинен пользователь или нет (True , False)
+
+domain/register  = {GET} - ничего не возвращает
+
+domain/register  = {POST} - должен подаваться JSON file c такими параметрами
+                        {"username":"Oleg","password":"very_difficult_password"},
+                        "number":"8777777777"}
+domain/login  = {GET} -  должен подаваться JSON file c такими параметрами
+                        {"username":"Oleg","password":"very_difficult_password"}
+
+domain/logout = {GET}  - Выход с аккаунта. Удаляет сессию 
