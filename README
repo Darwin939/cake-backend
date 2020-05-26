@@ -1,3 +1,13 @@
+Python version - 3.8
+
+                <B>HOW TO INSTALL</B>
+1. Install python
+2. Clone this rep
+3. Install Pip (python package manager)
+4. $python3 backend.py
+
+
+
 ROUTES 
 
 domain - base URL, basic url 
