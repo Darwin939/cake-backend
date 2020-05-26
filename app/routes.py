@@ -14,11 +14,11 @@ def orders():
     if request.method == 'POST':
         
         req_data = request.get_json()
-        discription = req_data['discription']
+        body = req_data['body']
         deadline = req_data['deadline']
         tags = req_data['tags'][2]
         print (tags)
-        order = Order(discription=discription,deadline = deadline, tags = tags, creation_date = time())  #поменять тайм дать ей функцию без скобок
+        order = Order(body=body,deadline = deadline, tags = tags)  #поменять тайм дать ей функцию без скобок
         db.session.add(order)
         db.session.commit()
         return "Db has updated"
@@ -26,7 +26,7 @@ def orders():
     orders = Order.query.all()
     for order in orders:
         y = {}
-        y['discription'] = order.discription
+        y['body'] = order.body
         y['deadline'] = order.deadline
        # y['tags'] = order.tags
         y['creation_date'] = order.creation_date
