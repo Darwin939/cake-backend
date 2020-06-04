@@ -14,7 +14,8 @@ class Order(db.Model):
     deadline = db.Column(db.Float)
     updated_on = db.Column(db.Integer, default = time,  onupdate=time)
     #TO-DO отношение один ко многим с User к Order`s
-    users = db.relationship('user', backref='order')
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    
     def __repr__(self):
         return '<Orders {}>'.format(self.body)
 
@@ -47,7 +48,8 @@ class User(db.Model,UserMixin):
     updated_on = db.Column(db.Integer, default = time,  onupdate=time)
     is_cooker = db.Column(db.Boolean)
     biography = db.Column(db.String(20000))
-    order_id = db.Column(db.Integer(), db.ForeignKey('order.id'))
+    
+    orders = db.relationship('Order', backref='user')
     def __repr__(self):
         return "<{}:{}>".format(self.id, self.username)
 
@@ -56,7 +58,7 @@ def load_user(user_id):
     return db.session.query(User).get(user_id)
 
 #from app import db
-#from app.models import Order,Tag,order_tag, User
+#from app.models import Order, User
 #u = User(username = "admin",number = "8755555",password = "admin")
 #db.create_all()
 #db.drop_all()

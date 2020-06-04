@@ -18,8 +18,8 @@ def orders():
         body = req_data['body']
         deadline = req_data['deadline']
         # tags = req_data['tags'][0]
-        print (tags)
-        order = Order(body=body,deadline = deadline)  #поменять тайм дать ей функцию без скобок
+        user_id = current_user.get_id()
+        order = Order(body=body,deadline = deadline,user_id = user_id)  #поменять тайм дать ей функцию без скобок
         db.session.add(order)
         db.session.commit()
         return "Db has updated"
