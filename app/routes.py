@@ -9,10 +9,9 @@ from flask import  Flask, render_template, request, redirect, url_for, flash, ma
 
 
 
-@app.route('/orders', methods =['POST','GET'] )
+@app.route('/orders', methods =['POST','GET'])
 def orders():
     if request.method == 'POST':
-        
         req_data = request.get_json()
         body = req_data['body']
         deadline = req_data['deadline']
@@ -56,13 +55,17 @@ def admin():
 
 @app.route('/register/',methods=['POST', 'GET'])
 def register():
-    if request.method == "POST":   
-        username = request.get_json()["username"]
-        password = request.get_json()["password"]
-        number  = request.get_json()["number"]
-        user = User(username = username,password = password,number=number)
-        db.session.add(user)
-        db.session.commit()
+    if request.method == "POST":
+        try:   
+            username = request.get_json()["username"]
+            password = request.get_json()["password"]
+            number  = request.get_json()["number"]
+            user = User(username = username,password = password,number=number)
+            db.session.add(user)
+            db.session.commit()
+        except Exception as e:
+            return jsonify({"Wrong data":str(e)})
+
         return jsonify({"Database_status":"db updated"}) 
     return jsonify({"Wrong data":"Need login and password,number"})
 
@@ -81,7 +84,6 @@ def login():
 
 
 @app.route('/logout/')
-@login_required
 def logout():
     logout_user()
     return jsonify({"is_authenticated":str(current_user.is_authenticated)})
