@@ -32,6 +32,7 @@ def orders():
         y['deadline'] = order.deadline
        # y['tags'] = order.tags
         y['creation_date'] = order.creation_date
+        y['user'] = str(db.session.query(User).get(order.user_id))
         x[int(order.id)] = y
     return x
 
