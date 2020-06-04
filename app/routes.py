@@ -22,7 +22,8 @@ def orders():
         order = Order(body=body,deadline = deadline,user_id = user_id)  #поменять тайм дать ей функцию без скобок
         db.session.add(order)
         db.session.commit()
-        return "Db has updated"
+        return jsonify({"Database_status":"db updated"}) 
+    
 
     x = {} 
     orders = Order.query.all()

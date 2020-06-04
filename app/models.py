@@ -7,6 +7,7 @@ from flask_login import LoginManager, UserMixin
 
 
 class Order(db.Model):
+    #row order activ/inactive
     __tablename__ = 'order'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(1000))

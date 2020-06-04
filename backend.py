@@ -3,7 +3,7 @@ from app import app
 
 
 if __name__ == '__main__':
-    port = 5011
+    port = 5000
     while True:
         try:
             app.run(host='localhost', port=port, debug=False)
