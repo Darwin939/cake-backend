@@ -89,6 +89,27 @@ def login():
     return jsonify({"Wrong data":"Need login and password"})
 
 
+@app.route('/user/<id>/') # TO-DO поменять путь к профилям людей по их юзернейм
+def user_profile(id):
+    try:
+        user = db.session.query(User).get(id)
+        x = {}
+        x['username'] = user.username
+        x['number'] = user.number
+        x['creation_date'] = user.creation_date
+        x['updated_on'] = user.updated_on
+        x['is_cooker '] = user.is_cooker
+        x['biography'] = user.biography
+        y = {}
+        for order in user.orders:
+            y[order.id] = order.body
+        
+        x['orders'] =  y 
+        return jsonify(x)
+    except Exception as e:
+        return jsonify({"Wrong data":"This person doesnt exist","Exception":str(e)})
+
+
 @app.route('/logout/')
 def logout():
     logout_user()
