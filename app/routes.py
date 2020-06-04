@@ -10,17 +10,20 @@ from flask import  Flask, render_template, request, redirect, url_for, flash, ma
 
 
 @app.route('/orders', methods =['POST','GET'])
+
 def orders():
-    if request.method == 'POST':
+
+    if request.method == 'POST' and current_user.is_authenticated:
         req_data = request.get_json()
         body = req_data['body']
         deadline = req_data['deadline']
-        tags = req_data['tags'][2]
+        # tags = req_data['tags'][0]
         print (tags)
-        order = Order(body=body,deadline = deadline, tags = tags)  #поменять тайм дать ей функцию без скобок
+        order = Order(body=body,deadline = deadline)  #поменять тайм дать ей функцию без скобок
         db.session.add(order)
         db.session.commit()
         return "Db has updated"
+
     x = {} 
     orders = Order.query.all()
     for order in orders:
