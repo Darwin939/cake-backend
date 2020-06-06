@@ -14,7 +14,13 @@ domain - base URL, basic url
 
 domain/  = базовый URL . Должен возвращать залогинен пользователь или нет (True , False)
 
-domain/register  = {GET} - ничего не возвращает
+domain/orders = {GET} - return {"body":"orderbody","deadline":6123716273.0,
+                                "creation_date":2344234.0,"user":
+                                {1:"username"}
+                                }
+domain/orders = {POST} - take {"body":"body","deadline":"236423847"}
+
+domain/register  = {GET} - nothing
 
 domain/register  = {POST} - должен подаваться JSON file c такими параметрами
                         {"username":"Oleg","password":"very_difficult_password"},
