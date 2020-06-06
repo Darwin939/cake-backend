@@ -23,7 +23,7 @@ domain/orders = {POST} - take {"body":"body","deadline":"236423847"}
 domain/register  = {GET} - nothing
 
 domain/register  = {POST} - должен подаваться JSON file c такими параметрами
-                        {"username":"Oleg","password":"very_difficult_password"},
+                        {"username":"lol","password":"very_difficult_password"},
                         "number":"8777777777"}
 domain/login  = {GET} -  должен подаваться JSON file c такими параметрами
                         {"username":"Oleg","password":"very_difficult_password"}
