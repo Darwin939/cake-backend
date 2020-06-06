@@ -39,35 +39,19 @@ def orders():
         x[int(order.id)] = y
     return x
 
-@app.route('/', methods =['POST','GET'] )
+@app.route('/api/', methods =['POST','GET'] )
 def index():
     return jsonify({"is_authenticated":str(current_user.is_authenticated)})
 
-#-------------------------BEGIN For tests , in production shoul be deleted------------
 
-@app.route('/admin/',methods=['post', 'get'])
-def admin():
-    if current_user.is_authenticated:
-        return "Congrats"
-    try:
-        if session['id'] =='147555151651admin':
-            return "Congrats you`re view this"
-    except:
-        pass
-    return 'no auth', 401
-    
-
-#------------------------- END For tests , in production shoul be deleted------------
-
-
-@app.route('/register/',methods=['POST', 'GET'])
+@app.route('/api/register/',methods=['POST', 'GET'])
 def register():
     if request.method == "POST":
         try:   
-            username = request.get_json()["username"]
             password = request.get_json()["password"]
             number  = request.get_json()["number"]
-            user = User(username = username,password = password,number=number)
+            iscooker = request.get_json()["iscooker"]
+            user = User(password = password,number=number,is_cooker = iscooker)
             db.session.add(user)
             db.session.commit()
         except Exception as e:
@@ -77,7 +61,7 @@ def register():
     return jsonify({"Wrong data":"Need login and password,number"})
 
 
-@app.route('/login/',methods=['post', 'get'])
+@app.route('/api/login/',methods=['post', 'get'])
 def login():
     username = request.get_json()["username"]
     password = request.get_json()["password"]
@@ -90,7 +74,7 @@ def login():
     return jsonify({"Wrong data":"Need login and password"})
 
 
-@app.route('/user/<id>/') # TO-DO поменять путь к профилям людей по их юзернейм
+@app.route('/api/user/<id>/') # TO-DO поменять путь к профилям людей по их юзернейм
 def user_profile(id):
     try:
         user = db.session.query(User).get(id)
@@ -111,7 +95,7 @@ def user_profile(id):
         return jsonify({"Wrong data":"This person doesnt exist","Exception":str(e)})
 
 
-@app.route('/logout/')
+@app.route('/api/logout/')
 def logout():
     logout_user()
     return jsonify({"is_authenticated":str(current_user.is_authenticated)})
