@@ -4,25 +4,6 @@ from datetime import datetime
 from time import time
 from flask_login import LoginManager, UserMixin
 
-
-
-class Order(db.Model):
-    #row order activ/inactive
-    __tablename__ = 'order'
-    id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.String(1000))
-    creation_date = db.Column(db.Integer, default = time)
-    deadline = db.Column(db.Float)
-    updated_on = db.Column(db.Integer, default = time,  onupdate=time)
-    #TO-DO отношение один ко многим с User к Order`s
-    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
-    
-    def __repr__(self):
-        return '<Orders {}>'.format(self.body)
-
-
-
-
 class User(db.Model,UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer(), primary_key=True)
@@ -34,10 +15,37 @@ class User(db.Model,UserMixin):
     updated_on = db.Column(db.Integer, default = time,  onupdate=time)
     is_cooker = db.Column(db.Boolean)
     biography = db.Column(db.String(20000))
-    
-    orders = db.relationship('Order', backref='user')
+    #заказы которые дали мне на работу
+    # my_work_orders = db.relationship('Order', backref='worker',foreign_keys = 'order.worker') 
+    # #заказы которые сделал я, написал я
+    # orders = db.relationship('Order', backref='user', foreign_keys = 'order.user_id')
+
+    my_work_orders = Column(Integer, ForeignKey("order.id"))
+    orders_id = Column(Integer, ForeignKey("order.id"))
+
+    my_work_order = relationship("Order", foreign_keys=[my_work_orders])
+    orders = relationship("Order", foreign_keys=[orders_id])
+
     def __repr__(self):
         return "<{}:{}>".format(self.id, self.username)
+
+
+class Order(db.Model):
+    #row order activ/inactive
+    __tablename__ = 'order'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(1000))
+    creation_date = db.Column(db.Integer, default = time)
+    deadline = db.Column(db.Float)
+    updated_on = db.Column(db.Integer, default = time,  onupdate=time)
+    status = db.Column(db.Boolean, default = True)
+    #чел который сделал заказ
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    #кто работает над этим заказом
+    worker = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    def __repr__(self):
+        return '<Orders {}>'.format(self.body)
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -45,7 +53,7 @@ def load_user(user_id):
 
 #from app import db
 #from app.models import Order, User
-#u = User(username = "admin",number = "8755555",password = "admin")
+#u = User(number = "8755555",password = "admin")
 #db.create_all()
 #db.drop_all()
 #order1  = Order(body='dasdsfd',deadline = 45456)

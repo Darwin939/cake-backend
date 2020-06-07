@@ -115,6 +115,7 @@ def user_profile(id):
                 z['body'] = order.body
                 z['deadline'] = order.deadline
                 z['creation_date'] = order.creation_date
+                z['status'] = order.status
                 y[order.id] = z 
             x["orders"] = y
             return jsonify(x)      
