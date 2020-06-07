@@ -20,14 +20,14 @@ class User(db.Model,UserMixin):
     # #заказы которые сделал я, написал я
     # orders = db.relationship('Order', backref='user', foreign_keys = 'order.user_id')
 
-    my_work_orders = Column(Integer, ForeignKey("order.id"))
-    orders_id = Column(Integer, ForeignKey("order.id"))
+    my_work_orders_id = db.Column(db.Integer, db.ForeignKey("order.id"))
+    orders_id = db.Column(db.Integer, db.ForeignKey("order.id"))
 
-    my_work_order = relationship("Order", foreign_keys=[my_work_orders])
-    orders = relationship("Order", foreign_keys=[orders_id])
+    my_work_orders = db.relationship("Order", foreign_keys=[my_work_orders_id])
+    orders = db.relationship("Order", foreign_keys=[orders_id])
 
     def __repr__(self):
-        return "<{}:{}>".format(self.id, self.username)
+        return "<{}:{}>".format(self.id, self.number)
 
 
 class Order(db.Model):
