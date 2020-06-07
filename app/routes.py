@@ -10,9 +10,7 @@ from flask import  Flask, render_template, request, redirect, url_for, flash, ma
 
 
 @app.route('/orders', methods =['POST','GET'])
-
 def orders():
-
     if request.method == 'POST' and current_user.is_authenticated:
         req_data = request.get_json()
         body = req_data['body']
@@ -23,8 +21,6 @@ def orders():
         db.session.add(order)
         db.session.commit()
         return jsonify({"Database_status":"db updated"}) 
-    
-
     x = {} 
     orders = Order.query.all()
     for order in orders:
@@ -52,47 +48,59 @@ def register():
             number  = request.get_json()["number"]
             iscooker = request.get_json()["iscooker"]
             user = User(password = password,number=number,is_cooker = iscooker)
+            #telephone number validation
             db.session.add(user)
             db.session.commit()
         except Exception as e:
             return jsonify({"Wrong data":str(e)})
 
-        return jsonify({"Database_status":"db updated"}) 
+        user_num = db.session.query(User).filter(User.number == number).first()
+        login_user(user,remember=True)
+        return jsonify({"Database_status":"db updated","is_authenticated":str(current_user.is_authenticated)}) 
     return jsonify({"Wrong data":"Need login and password,number"})
 
-
+#----------------------??????????????-------------------
 @app.route('/api/login/',methods=['post', 'get'])
 def login():
-    username = request.get_json()["username"]
-    password = request.get_json()["password"]
-    user = db.session.query(User).filter(User.username == username).first()
+    req = request.get_json()
+    number = req["number"]
+    password = req["password"]
+    user = db.session.query(User).filter(User.number == number).first()
     if user and  user.password ==password:
         login_user(user)
         return jsonify({"is_authenticated":str(current_user.is_authenticated)})
     else:
         return jsonify({"Wrong data":"Password or Login Incorrect"})
     return jsonify({"Wrong data":"Need login and password"})
+#---------------------??????????????---------------------
 
-
-@app.route('/api/user/<id>/') # TO-DO поменять путь к профилям людей по их юзернейм
+@app.route('/api/user/<id>/',methods = ["POST","GET"]) # TO-DO поменять путь к профилям людей по их юзернейм
 def user_profile(id):
-    try:
-        user = db.session.query(User).get(id)
-        x = {}
-        x['username'] = user.username
-        x['number'] = user.number
-        x['creation_date'] = user.creation_date
-        x['updated_on'] = user.updated_on
-        x['is_cooker '] = user.is_cooker
-        x['biography'] = user.biography
-        y = {}
-        for order in user.orders:
-            y[order.id] = order.body
+    if request.method == "POST" and current_user.is_authenticated and current_user.get_id()==id:   #check current user function
+        try:
+            req = request.get_json()  
+            password = req["password"]
+            name  = req["name"]
+            secondname = req["secondname"]
+            #social = req["social"]
+            #avatar = req["???"] image file
+            user = db.session.query(User).filter(User.id == id).first()
+            user.password = password
+            user.name = name
+            user.secondname = secondname
+            db.session.add(user)
+            db.session.commit()
+        except Exception as e:
+            return jsonify({"Wrong data":str(e)})
         
-        x['orders'] =  y 
-        return jsonify(x)
-    except Exception as e:
-        return jsonify({"Wrong data":"This person doesnt exist","Exception":str(e)})
+        
+        # user = db.session.query(User).get(id)
+        # x['username'] = user.username 
+        return jsonify({"Database_status":"db updated"})
+    if request.method == "GET":
+        x = {}
+
+    return jsonify({"Wrong data":"This person doesnt exist","Exception":"may be you dont have right permission"})
 
 
 @app.route('/api/logout/')
