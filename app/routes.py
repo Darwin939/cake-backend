@@ -98,10 +98,36 @@ def user_profile(id):
         # x['username'] = user.username 
         return jsonify({"Database_status":"db updated"})
     if request.method == "GET":
-        x = {}
+        try:
+            x = {}
+            user = db.session.query(User).get(id)
+            x['number'] = user.number
+            x['creation_date'] = user.creation_date
+            x['name'] = user.name
+            x['secondname'] = user.secondname
+            x['updated_on'] = user.updated_on
+            x['is_cooker'] = user.is_cooker
+            x['biography'] = user.biography
+            orders = db.session.query(Order).filter(Order.user_id == id).all()
+            y = {}
+            for order in orders:
+                z = {}
+                z['body'] = order.body
+                z['deadline'] = order.deadline
+                z['creation_date'] = order.creation_date
+                y[order.id] = z 
+            x["orders"] = y
+            return jsonify(x)      
+        except Exception as e:
+            return jsonify({"Wrong data":"maybe this user doesnt exist","Exception":str(e)})
+
 
     return jsonify({"Wrong data":"This person doesnt exist","Exception":"may be you dont have right permission"})
 
+@app.route('/api/user/<id>/todo/',methods = ["POST","GET"]) # TO-DO поменять путь к профилям людей по их юзернейм
+def user_profile_todo(id):
+    if request.method == "GET" and current_user.is_authenticated and current_user.get_id()==id:   #check current user function
+        pass
 
 @app.route('/api/logout/')
 def logout():
