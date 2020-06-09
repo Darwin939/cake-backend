@@ -15,17 +15,8 @@ class User(db.Model,UserMixin):
     updated_on = db.Column(db.Integer, default = time,  onupdate=time)
     is_cooker = db.Column(db.Boolean)
     biography = db.Column(db.String(20000))
-    #заказы которые дали мне на работу
-    # my_work_orders = db.relationship('Order', backref='worker',foreign_keys = 'order.worker') 
-    # #заказы которые сделал я, написал я
-    # orders = db.relationship('Order', backref='user', foreign_keys = 'order.user_id')
-
-    my_work_orders_id = db.Column(db.Integer, db.ForeignKey("order.id"))
-    orders_id = db.Column(db.Integer, db.ForeignKey("order.id"))
-
-    my_work_orders = db.relationship("Order", foreign_keys=[my_work_orders_id])
-    orders = db.relationship("Order", foreign_keys=[orders_id])
-
+    #orders - заказы которые сделал он
+    #w_orders - заказы для работы
     def __repr__(self):
         return "<{}:{}>".format(self.id, self.number)
 
@@ -39,10 +30,11 @@ class Order(db.Model):
     deadline = db.Column(db.Float)
     updated_on = db.Column(db.Integer, default = time,  onupdate=time)
     status = db.Column(db.Boolean, default = True)
-    #чел который сделал заказ
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
-    #кто работает над этим заказом
-    worker = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    worker_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    user = db.relationship("User",foreign_keys = [user_id],backref='orders')
+    worker = db.relationship("User",foreign_keys = [worker_id], backref ='w_orders')
+    
     def __repr__(self):
         return '<Orders {}>'.format(self.body)
 
@@ -56,7 +48,7 @@ def load_user(user_id):
 #u = User(number = "8755555",password = "admin")
 #db.create_all()
 #db.drop_all()
-#order1  = Order(body='dasdsfd',deadline = 45456)
+#order1  = Order(body='dasdsfd',deadline = 45456,user_id = 1,worker_id = 1)
 #db.session.add(order1)
 #db.session.commit()
 #t1 = Tag(name="refactoring")

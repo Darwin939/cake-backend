@@ -128,7 +128,8 @@ def user_profile(id):
 @app.route('/api/user/<id>/todo/',methods = ["POST","GET"]) # TO-DO поменять путь к профилям людей по их юзернейм
 def user_profile_todo(id):
     if request.method == "GET" and current_user.is_authenticated and current_user.get_id()==id:   #check current user function
-        pass
+        x = {}
+        
 
 @app.route('/api/logout/')
 def logout():
