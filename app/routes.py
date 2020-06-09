@@ -146,7 +146,19 @@ def user_profile_todo(id):
         return x        
     if request.method == "POST" and current_user.is_authenticated and current_user.get_id()==id:
         req = request.get_json()
-        # id = req[]
+        id = req["order_id"]
+        status = req["status"]
+        order = db.session.query(Order).filter(Order.id==id).first()
+        order.status = status
+        db.session.add(order)
+        db.session.commit()
+        return {"Database_status":"db updated"}
+
+
+
+
+
+
     return {"Wrong data":"maybe this user doesnt exist or you dont have this permission"}
 
 @app.route('/api/logout/')
