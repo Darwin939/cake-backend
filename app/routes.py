@@ -9,7 +9,7 @@ from flask import  Flask, render_template, request, redirect, url_for, flash, ma
 
 
 
-@app.route('/orders', methods =['POST','GET'])
+@app.route('/api/orders', methods =['POST','GET'])
 def orders():
     if request.method == 'POST' and current_user.is_authenticated:
         req_data = request.get_json()
@@ -129,7 +129,25 @@ def user_profile(id):
 def user_profile_todo(id):
     if request.method == "GET" and current_user.is_authenticated and current_user.get_id()==id:   #check current user function
         x = {}
-        
+        orders = db.session.query(Order).filter(Order.worker_id==id).all()
+
+        for order in orders:
+            y = {}
+            y['id'] = order.id
+            y['body'] = order.body
+            y['creation_date'] = order.creation_date
+            y['deadline'] = order.deadline
+            y['updated_on'] = order.updated_on
+            y['status'] = order.status
+            y['user_id']  = order.user_id
+            y['worker_id'] = order.worker_id
+            y['title'] = order.title
+            x[order.id] = y
+        return x        
+    if request.method == "POST" and current_user.is_authenticated and current_user.get_id()==id:
+        req = request.get_json()
+        # id = req[]
+    return {"Wrong data":"maybe this user doesnt exist or you dont have this permission"}
 
 @app.route('/api/logout/')
 def logout():
