@@ -7,32 +7,6 @@ from flask import  Flask, render_template, request, redirect, url_for, flash, ma
 
 
 
-@app.route('/api/orders', methods =['POST','GET'])
-def orders():
-    if request.method == 'POST' and current_user.is_authenticated:
-        req_data = request.get_json()
-        body = req_data['body']
-        deadline = req_data['deadline']
-        # tags = req_data['tags'][0]
-        user_id = current_user.get_id()
-        order = Order(body=body,deadline = deadline,user_id = user_id)  #поменять тайм дать ей функцию без скобок
-        db.session.add(order)
-        db.session.commit()
-        return jsonify({"Database_status":"db updated"}) 
-    x = {} 
-    orders = Order.query.all()
-    for order in orders:
-        y = {}
-        y['body'] = order.body
-        y['deadline'] = order.deadline
-       # y['tags'] = order.tags
-        y['creation_date'] = order.creation_date
-        z = {}
-        z[int(db.session.query(User).get(order.user_id).id)] = str(db.session.query(User).get(order.user_id).username)
-        y['user'] = z
-        x[int(order.id)] = y
-    return x
-
 @app.route('/api/', methods =['POST','GET'] )
 def index():
     return jsonify({"is_authenticated":str(current_user.is_authenticated)})
@@ -176,14 +150,42 @@ def myprofile():
             db.session.commit()
         except Exception as e:
             return jsonify({"Wrong data":str(e)})
-        
-        
         # user = db.session.query(User).get(id)
         # x['username'] = user.username 
         return redirect(url_for('myprofile'))
     return {"Wrong data":"maybe this user doesnt exist or you dont have this permission"}
-    
+
 @app.route('/api/logout/')
 def logout():
     logout_user()
     return jsonify({"is_authenticated":str(current_user.is_authenticated)})
+
+
+@app.route('/api/orders', methods =['POST','GET'])
+def orders():
+    if request.method == 'POST' and current_user.is_authenticated:
+        req_data = request.get_json()
+        body = req_data['body']
+        deadline = req_data['deadline']
+        # tags = req_data['tags'][0]
+        user_id = current_user.get_id()
+        order = Order(body=body,deadline = deadline,user_id = user_id)  #поменять тайм дать ей функцию без скобок
+        db.session.add(order)
+        db.session.commit()
+        return redirect(url_for('orders')) 
+    x = {} 
+    # orders = Order.query.all()
+    req = request.get_json()
+    page = req[]
+    orders = Order.query.paginate(1,10,False).items   #pagination
+    for order in orders:
+        y = {}
+        y['body'] = order.body
+        y['deadline'] = order.deadline
+       # y['tags'] = order.tags
+        y['creation_date'] = order.creation_date
+        z = {}
+        z[int(db.session.query(User).get(order.user_id).id)] = str(db.session.query(User).get(order.user_id).name)
+        y['user'] = z
+        x[int(order.id)] = y
+    return x
