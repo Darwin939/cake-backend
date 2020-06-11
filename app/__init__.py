@@ -15,7 +15,8 @@ login_manager = LoginManager(app)
 app.config['SECRET_KEY'] = 'a really really really realy long secret key'
 migrate = Migrate(app, db)
 
-from app import routes, models
+from routes import routes
+from app import models
 
 from flask_cors import CORS
 cors = CORS(app)

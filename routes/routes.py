@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import render_template , jsonify ,request
 from app import app , db
-
-from additional_func.now_time import time
 from app.models import Order,User
 from flask_login import current_user,login_required, login_user, logout_user
 from flask import  Flask, render_template, request, redirect, url_for, flash, make_response, session
@@ -76,27 +74,6 @@ def login():
 
 @app.route('/api/user/<id>/',methods = ["POST","GET"]) # TO-DO поменять путь к профилям людей по их юзернейм
 def user_profile(id):
-    if request.method == "POST" and current_user.is_authenticated and current_user.get_id()==id:   #check current user function
-        try:
-            req = request.get_json()  
-            password = req["password"]
-            name  = req["name"]
-            secondname = req["secondname"]
-            #social = req["social"]
-            #avatar = req["???"] image file
-            user = db.session.query(User).filter(User.id == id).first()
-            user.password = password
-            user.name = name
-            user.secondname = secondname
-            db.session.add(user)
-            db.session.commit()
-        except Exception as e:
-            return jsonify({"Wrong data":str(e)})
-        
-        
-        # user = db.session.query(User).get(id)
-        # x['username'] = user.username 
-        return jsonify({"Database_status":"db updated"})
     if request.method == "GET":
         try:
             x = {}
@@ -125,12 +102,12 @@ def user_profile(id):
 
     return jsonify({"Wrong data":"This person doesnt exist","Exception":"may be you dont have right permission"})
 
-@app.route('/api/user/<id>/todo/',methods = ["POST","GET"]) # TO-DO поменять путь к профилям людей по их юзернейм
-def user_profile_todo(id):
-    if request.method == "GET" and current_user.is_authenticated and current_user.get_id()==id:   #check current user function
+@app.route('/api/user/myprofile/todo/',methods = ["POST","GET"]) # TO-DO поменять путь к профилям людей по их юзернейм
+def user_profile_todo():
+    if request.method == "GET" and current_user.is_authenticated:   #check current user function
+        id = current_user.get_id()
         x = {}
         orders = db.session.query(Order).filter(Order.worker_id==id).all()
-
         for order in orders:
             y = {}
             y['id'] = order.id
@@ -144,7 +121,7 @@ def user_profile_todo(id):
             y['title'] = order.title
             x[order.id] = y
         return x        
-    if request.method == "POST" and current_user.is_authenticated and current_user.get_id()==id:
+    if request.method == "POST" and current_user.is_authenticated:
         req = request.get_json()
         id = req["order_id"]
         status = req["status"]
@@ -152,15 +129,60 @@ def user_profile_todo(id):
         order.status = status
         db.session.add(order)
         db.session.commit()
-        return {"Database_status":"db updated"}
-
-
-
-
-
+        return redirect(url_for('user_profile_todo', id = current_user.get_id()))
+        
 
     return {"Wrong data":"maybe this user doesnt exist or you dont have this permission"}
 
+@app.route("/api/myprofile", methods =["GET","POST"])
+@login_required
+def myprofile():
+    if request.method == "GET" and current_user.is_authenticated :
+        x = {}
+        id = current_user.get_id()
+        user = db.session.query(User).get(id)
+        x['number'] = user.number
+        x['creation_date'] = user.creation_date
+        x['name'] = user.name
+        x['secondname'] = user.secondname
+        x['updated_on'] = user.updated_on
+        x['is_cooker'] = user.is_cooker
+        x['biography'] = user.biography
+        orders = db.session.query(Order).filter(Order.user_id == id).all()
+        y = {}
+        for order in orders:
+            z = {}
+            z['body'] = order.body
+            z['deadline'] = order.deadline
+            z['creation_date'] = order.creation_date
+            z['status'] = order.status
+            y[order.id] = z 
+        x["orders"] = y
+        return jsonify(x)
+    if request.method == "POST" and current_user.is_authenticated:   #check current user function
+        try:
+            req = request.get_json()  
+            password = req["password"]
+            name  = req["name"]
+            secondname = req["secondname"]
+            #social = req["social"]
+            #avatar = req["???"] image file
+            id = current_user.get_id()
+            user = db.session.query(User).filter(User.id == id).first()
+            user.password = password
+            user.name = name
+            user.secondname = secondname
+            db.session.add(user)
+            db.session.commit()
+        except Exception as e:
+            return jsonify({"Wrong data":str(e)})
+        
+        
+        # user = db.session.query(User).get(id)
+        # x['username'] = user.username 
+        return redirect(url_for('myprofile'))
+    return {"Wrong data":"maybe this user doesnt exist or you dont have this permission"}
+    
 @app.route('/api/logout/')
 def logout():
     logout_user()
