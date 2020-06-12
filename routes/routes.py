@@ -175,13 +175,19 @@ def orders():
         db.session.add(order)
         db.session.commit()
         return redirect(url_for('orders')) 
-    x = {} 
-    # orders = Order.query.all()
-    req = request.get_json()
-    price_array = req["filter"]["price"]
-    weight_array = req["filter"]["weight"]
-    page = req['page_num']
-    page_s = req['page_size']
+    try:
+        x = {} 
+        # orders = Order.query.all()
+        req = request.get_json()
+        price_array = req["filter"]["price"]
+        weight_array = req["filter"]["weight"]
+        page = req['page_num']
+        page_s = req['page_size']
+    except:
+        price_array = [0,1000000000]
+        weight_array = [0,1000000000]
+        page = 1
+        page_s = 10
     orders = Order.query.filter(Order.price>price_array[0], Order.price<price_array[1]).paginate(page,page_s,False).items
     # o = db.session.query(Order).filter(Order.price>price_array[0], Order.price<price_array[1]).all()
     # orders = Order.query.paginate(page,page_s,False).items   #pagination
@@ -199,7 +205,7 @@ def orders():
         x[int(order.id)] = y
     return x
 
-
+#my orders for customer
 @app.route('/api/my_orders', methods =['POST','GET'])
 def my_orders():
     if request.method == 'GET' and current_user.is_authenticated:
@@ -221,4 +227,20 @@ def my_orders():
             y[order.id] = z 
         x["orders"] = y
         return jsonify(x)
-    return 
+    return {"Wrong data":"maybe this user doesnt exist or you dont have this permission"}
+
+@app.route('/api/make_order', methods =['POST','GET'])
+def make_order():
+    if request.method == 'POST' and current_user.is_authenticated:    
+        id = current_user.get_id()
+        req_data = request.get_json()
+        body = req_data['body']
+        deadline = req_data['deadline']
+        price = req_data["price"]
+        weight = req_data["weight"]
+        user_id = current_user.get_id()
+        order = Order(body=body,deadline = deadline,user_id = user_id,price = price,weight = weight)
+        db.session.add(order)
+        db.session.commit()
+        return redirect(url_for('orders'))
+    return {"Wrong data":"maybe this user doesnt exist or you dont have this permission"}
