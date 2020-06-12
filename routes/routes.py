@@ -167,9 +167,11 @@ def orders():
         req_data = request.get_json()
         body = req_data['body']
         deadline = req_data['deadline']
+        price = req_data["price"]
+        weight = req_data["weight"]
         # tags = req_data['tags'][0]
         user_id = current_user.get_id()
-        order = Order(body=body,deadline = deadline,user_id = user_id)  #поменять тайм дать ей функцию без скобок
+        order = Order(body=body,deadline = deadline,user_id = user_id,price = price,weight = weight)
         db.session.add(order)
         db.session.commit()
         return redirect(url_for('orders')) 
@@ -182,7 +184,6 @@ def orders():
     page_s = req['page_size']
     orders = Order.query.filter(Order.price>price_array[0], Order.price<price_array[1]).paginate(page,page_s,False).items
     # o = db.session.query(Order).filter(Order.price>price_array[0], Order.price<price_array[1]).all()
-    
     # orders = Order.query.paginate(page,page_s,False).items   #pagination
     for order in orders:
         y = {}
@@ -197,3 +198,27 @@ def orders():
         y['user'] = z
         x[int(order.id)] = y
     return x
+
+
+@app.route('/api/my_orders', methods =['POST','GET'])
+def my_orders():
+    if request.method == 'GET' and current_user.is_authenticated:
+        id = current_user.get_id()
+        x = {}
+        req = request.get_json()
+        page = req["page"]
+        page_s = req["page_size"]
+        orders = db.session.query(Order).filter(Order.user_id == id).paginate(page,page_s,False).items
+        y = {}
+        for order in orders:
+            z = {}
+            z['body'] = order.body
+            z['deadline'] = order.deadline
+            z['creation_date'] = order.creation_date
+            z['status'] = order.status
+            z['price'] = order.price
+            z['weight'] = order.weight
+            y[order.id] = z 
+        x["orders"] = y
+        return jsonify(x)
+    return 
