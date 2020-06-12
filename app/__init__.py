@@ -16,6 +16,7 @@ app.config['SECRET_KEY'] = 'a really really really realy long secret key'
 migrate = Migrate(app, db)
 
 from routes import routes
+from routes import auth,myprofile,orders
 from app import models
 
 from flask_cors import CORS

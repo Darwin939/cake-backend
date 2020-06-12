@@ -176,14 +176,22 @@ def orders():
     x = {} 
     # orders = Order.query.all()
     req = request.get_json()
-    page = req[]
-    orders = Order.query.paginate(1,10,False).items   #pagination
+    price_array = req["filter"]["price"]
+    weight_array = req["filter"]["weight"]
+    page = req['page_num']
+    page_s = req['page_size']
+    orders = Order.query.filter(Order.price>price_array[0], Order.price<price_array[1]).paginate(page,page_s,False).items
+    # o = db.session.query(Order).filter(Order.price>price_array[0], Order.price<price_array[1]).all()
+    
+    # orders = Order.query.paginate(page,page_s,False).items   #pagination
     for order in orders:
         y = {}
         y['body'] = order.body
         y['deadline'] = order.deadline
        # y['tags'] = order.tags
         y['creation_date'] = order.creation_date
+        y['price'] = order.price
+        y['weight'] = order.weight
         z = {}
         z[int(db.session.query(User).get(order.user_id).id)] = str(db.session.query(User).get(order.user_id).name)
         y['user'] = z
