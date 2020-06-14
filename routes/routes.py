@@ -198,7 +198,7 @@ def orders():
         y['body'] = order.body
         y['deadline'] = order.deadline
        # y['tags'] = order.tags
-        y['creation_date'] = order.creation_date
+        y['creation_date'] = int(order.creation_date)
         y['price'] = order.price
         y['weight'] = order.weight
         z = {}
