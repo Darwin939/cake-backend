@@ -188,7 +188,7 @@ def orders():
         weight_array = [0,1000000000]
         page = 1
         page_s = 10
-    orders = Order.query.filter(Order.price>price_array[0], Order.price<price_array[1]).paginate(page,page_s,False).items
+    orders = Order.query.filter(Order.price>price_array[0], Order.price<price_array[1]).order_by(Order.creation_date.desc()).paginate(page,page_s,False).items
     # o = db.session.query(Order).filter(Order.price>price_array[0], Order.price<price_array[1]).all()
     # orders = Order.query.paginate(page,page_s,False).items   #pagination
     
