@@ -176,7 +176,7 @@ def orders():
         db.session.commit()
         return redirect(url_for('orders')) 
     try:
-        x = {} 
+        x = [] 
         # orders = Order.query.all()
         req = request.get_json()
         price_array = req["filter"]["price"]
@@ -191,8 +191,10 @@ def orders():
     orders = Order.query.filter(Order.price>price_array[0], Order.price<price_array[1]).paginate(page,page_s,False).items
     # o = db.session.query(Order).filter(Order.price>price_array[0], Order.price<price_array[1]).all()
     # orders = Order.query.paginate(page,page_s,False).items   #pagination
+    
     for order in orders:
         y = {}
+        y['order_id'] = order.id
         y['body'] = order.body
         y['deadline'] = order.deadline
        # y['tags'] = order.tags
@@ -202,8 +204,8 @@ def orders():
         z = {}
         z[int(db.session.query(User).get(order.user_id).id)] = str(db.session.query(User).get(order.user_id).name)
         y['user'] = z
-        x[int(order.id)] = y
-    return x
+        x.append( y)
+    return jsonify(x)
 
 #my orders for customer
 @app.route('/api/my_orders', methods =['POST','GET'])
