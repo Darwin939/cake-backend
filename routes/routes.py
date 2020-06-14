@@ -201,9 +201,9 @@ def orders():
         y['creation_date'] = int(order.creation_date)
         y['price'] = order.price
         y['weight'] = order.weight
-        z = {}
-        z["user_id"] = int(db.session.query(User).get(order.user_id).id)
-        z['user_name'] = str(db.session.query(User).get(order.user_id).name)
+        z = []
+        z["id"] = int(db.session.query(User).get(order.user_id).id)
+        z['name'] = str(db.session.query(User).get(order.user_id).name)
         # z[int(db.session.query(User).get(order.user_id).id)] = str(db.session.query(User).get(order.user_id).name)
         y['user'] = z
         x.append( y)
