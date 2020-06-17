@@ -4,7 +4,7 @@ from app import app , db
 from app.models import Order,User
 from flask_login import current_user,login_required, login_user, logout_user
 from flask import  Flask, render_template, request, redirect, url_for, flash, make_response, session
-
+import json
 
 
 @app.route('/api/', methods =['POST','GET'] )
@@ -175,23 +175,25 @@ def orders():
         db.session.add(order)
         db.session.commit()
         return redirect(url_for('orders')) 
-    try:
-        x = [] 
+    
         # orders = Order.query.all()
-        req = request.get_json()
-        price_array = req["filter"]["price"]
-        weight_array = req["filter"]["weight"]
-        page = req['page_num']
-        page_s = req['page_size']
+            
+            # price_array = req["filter"]["price"]
+            # weight_array = req["filter"]["weight"]
+    page = request.args.get('page_num', 1, type=int) 
+    page_s = request.args.get('page_size', 10, type=int)
+    try:
+        filters  = json.loads(request.args.get('filter'))
+        price_array = filters["price"]
+        weight_array = filters["weight"]
     except:
         price_array = [0,1000000000]
         weight_array = [0,1000000000]
-        page = 1
-        page_s = 10
-    orders = Order.query.filter(Order.price>price_array[0], Order.price<price_array[1]).order_by(Order.creation_date.desc()).paginate(page,page_s,False).items
+            
+    orders = Order.query.filter(Order.price>price_array[0], Order.price<price_array[1],Order.weight>weight_array[0],Order.weight<weight_array[1]).order_by(Order.creation_date.desc()).paginate(page,page_s,False).items
     # o = db.session.query(Order).filter(Order.price>price_array[0], Order.price<price_array[1]).all()
     # orders = Order.query.paginate(page,page_s,False).items   #pagination
-    
+    x = []
     for order in orders:
         y = {}
         y['order_id'] = order.id
